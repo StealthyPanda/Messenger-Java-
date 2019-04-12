@@ -8,7 +8,7 @@ class Tester
 		Scanner scan = new Scanner(System.in);
 		Socket s = null;
 		System.out.print("Enter what you think the ip is: ");
-		String address = scan.nextLine();
+		String address = scan.nextLine().trim();
 		try
 		{
 			s = new Socket(address, 5000);

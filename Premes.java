@@ -12,12 +12,13 @@ class Premes
 	static InputStream input = null;
 	static OutputStream output = null;
 	static String othern, myn;
+	static Scanner scan;
 	
 
 	public static void main(String[] args) throws Exception
 	{
 		//init stuff
-		Scanner scan = new Scanner(System.in);
+		scan = new Scanner(System.in);
 		String choice;
 		ip = InetAddress.getLocalHost();
 
@@ -33,19 +34,18 @@ class Premes
 			choice = scan.nextLine().toLowerCase();
 			if (choice.equals("j")||choice.equals("join")) 
 			{
-
+				Join();
 				break;
 								
 			} else if (choice.equals("n")||choice.equals("new"))
 			{
 
-				
 				ServerStart();
 				break;
 
 			} else 
 			{
-				System.out.println("Invalid choice!");
+				System.out.println("Invalid choice!\n");
 				System.out.println("Join or New Convo?: ");
 			}
 		}
@@ -53,6 +53,37 @@ class Premes
 
 		
 	}
+
+
+	static void Join()
+	{
+
+		System.out.print("Enter the IP address of convo: ");
+		String add = scan.nextLine().trim();
+		System.out.println("Connecting to convo...");
+
+		try
+		{
+
+			sock = new Socket(add, 5000);
+			input = sock.getInputStream();
+			output = sock.getOutputStream();
+			Send(myn);
+			othern = Get();
+			System.out.println("Connected to " + othern + "!");
+
+		}
+		catch(Exception e)
+		{
+			System.out.println("Connection Failed!");
+			System.out.println(e);
+		}
+
+
+
+	}
+
+
 
 	
 
@@ -71,7 +102,9 @@ class Premes
 			input = sock.getInputStream();
 			output = sock.getOutputStream();
 			othern = Get();
+			Send(myn);
 			System.out.println("Connected to " + othern + "!");
+			//Send("<connected>");
 
 		}
 		catch(Exception e)
@@ -105,15 +138,30 @@ class Premes
 
 	static String Get()
 	{
+		try
+		{
+			input.read(buffer);
+		}
+		catch(Exception e)
+		{
+			//Im tired of these try statements.
+		}
 
-		input.read(buffer);
 		return GetString(buffer);
 
 	}
 
 	static void Send(String str)
 	{
-		
+		try
+		{
+			output.write(str.getBytes());
+		}
+		catch(Exception e)
+		{
+			//Dont do no nothing
+		}
+
 	}
 
 }
