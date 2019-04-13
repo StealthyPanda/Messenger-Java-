@@ -21,10 +21,12 @@ class Premes
 		scan = new Scanner(System.in);
 		String choice;
 		ip = InetAddress.getLocalHost();
+		Reader readthread = new Reader();
+		Writer writethread = new Writer();
 
 
 
-		//main stuff
+		//main start stuff
 		System.out.println("Welcome to Messenger By StealthyPanda! (Java edition)");
 		System.out.print("Enter a nickname: "); myn = scan.nextLine().trim();
 		System.out.println("\n" + myn + " joins the convo!\n");
@@ -51,6 +53,29 @@ class Premes
 		}
 
 
+		//Thread inits
+		readthread.start();
+		writethread.start();
+
+
+
+		//by this point everything is done. so this while loop is for stopping the termination of main thread
+		while (true)
+		{
+			/*
+			his palms are sweaty,
+			knees weak arms are heavy,
+			theres vomit on his sweater already,
+			moms spaghetti,
+			hes nervous,
+			but on the surface he looks calm and ready,
+			he draws palms, but he keeps on forgetting
+			what he wrote down,
+			the whole crowd goes so loud,
+			he opens his mouth,
+			but the words wont come out.
+			*/
+		}
 		
 	}
 
@@ -138,6 +163,7 @@ class Premes
 
 	static String Get()
 	{
+		buffer = new byte[100];
 		try
 		{
 			input.read(buffer);
@@ -155,6 +181,7 @@ class Premes
 	{
 		try
 		{
+
 			output.write(str.getBytes());
 		}
 		catch(Exception e)
@@ -166,7 +193,40 @@ class Premes
 
 }
 
-class AThread extends Thread
+class Reader extends Thread
 {
+
+	public void run()
+	{
+		
+		while (true)
+		{
+
+			System.out.println("\n" + Premes.othern + ": " + Premes.Get());
+
+		}
+
+	}
+
+}
+
+class Writer extends Thread
+{
+
+	public void run()
+	{
+
+		Scanner elscan = new Scanner(System.in);
+		String tosend;
+		
+		while (true)
+		{
+
+			tosend = elscan.nextLine();
+			Premes.Send(tosend);
+
+		}
+
+	}
 
 }
