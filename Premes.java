@@ -7,7 +7,7 @@ class Premes
 
 	static ServerSocket server = null;
 	static Socket sock = null;
-	static InetAddress ip;
+	static Inet4Address ip;
 	static byte[] buffer = new byte[100];
 	static InputStream input = null;
 	static OutputStream output = null;
@@ -20,7 +20,7 @@ class Premes
 		//init stuff
 		scan = new Scanner(System.in);
 		String choice;
-		ip = InetAddress.getLocalHost();
+		ip = (Inet4Address) InetAddress.getLocalHost();
 		Reader readthread = new Reader();
 		Writer writethread = new Writer();
 
@@ -33,7 +33,7 @@ class Premes
 		System.out.println("Join or New Convo?: ");
 		while (true)
 		{
-			choice = scan.nextLine().toLowerCase();
+			choice = scan.nextLine().toLowerCase().trim();
 			if (choice.equals("j")||choice.equals("join")) 
 			{
 				Join();
@@ -90,7 +90,7 @@ class Premes
 		try
 		{
 
-			sock = new Socket(add, 5000);
+			sock = new Socket(add, 500);
 			input = sock.getInputStream();
 			output = sock.getOutputStream();
 			Send(myn);
@@ -121,7 +121,7 @@ class Premes
 		try
 		{
 
-			server = new ServerSocket(5000);
+			server = new ServerSocket(500);
 			System.out.println("\nNew Convo started! Waiting for someone to join...");
 			sock = server.accept();
 			input = sock.getInputStream();
@@ -170,7 +170,7 @@ class Premes
 		}
 		catch(Exception e)
 		{
-			//Im tired of these try statements.
+			//Im tired of these try statements. Same.
 		}
 
 		return GetString(buffer);
@@ -195,14 +195,46 @@ class Premes
 
 class Reader extends Thread
 {
-
+	String recmes;
+	
 	public void run()
 	{
 		
 		while (true)
 		{
+			recmes = Premes.Get();
 
-			System.out.println("\n" + Premes.othern + ": " + Premes.Get());
+			if ( recmes.equals("<<requestforfile>>") )
+			{
+				while (true){
+
+					System.out.println("Incoming file. Accept? Y/N: ");
+					
+					if (Writer.tosend.equals("y")||Writer.tosend.equals("yes")) 
+					{
+						System.out.println("yessed");
+						break;
+					} else if (Writer.tosend.equals("n")||Writer.tosend.equals("no"))
+					{
+						System.out.println("nooed");
+						break;
+					} else {
+						System.out.println("\nInvalid input.\n");
+					}
+
+				}
+
+
+			} else if (recmes.equals("<<leavingconvo>>")) 
+			{
+
+				System.out.println("\n" + Premes.othern + " has left the conversation!");
+				break;
+			} else {
+
+				System.out.println("\n" + Premes.othern + ": " + recmes);
+
+			}
 
 		}
 
@@ -212,18 +244,31 @@ class Reader extends Thread
 
 class Writer extends Thread
 {
+	public static String tosend;
 
 	public void run()
 	{
 
 		Scanner elscan = new Scanner(System.in);
-		String tosend;
-		
+				
 		while (true)
 		{
 
-			tosend = elscan.nextLine();
-			Premes.Send(tosend);
+			tosend = elscan.nextLine().toLowerCase().trim();
+
+			if (tosend.equals("<send>")){
+
+				Premes.Send("<<requestforfile>>");
+
+			} else if (tosend.equals("<exit>")){
+
+				Premes.Send("<<leavingconvo>>");
+
+			} else { 
+
+				Premes.Send(tosend);
+			
+			}
 
 		}
 
